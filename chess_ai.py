@@ -22,9 +22,9 @@ def to_svg(board):
 @app.route("/")
 def root():
     board_svg = to_svg(board)
-    html = '<html><head></head><body>'
+    html = '<html><head></head><body style="background-color: #6e6862; text-align: center">'
     html += '<html><body><img width=680 src="data:image/svg+xml;base64,%s"></img>' % board_svg
-    html += '<form action="/move"><input name="move" type="text"></input><input type="submit" value="Move"></form><br/>'
+    html += '<form action="/move"><input name="move" type="text"></input><br/><input type="submit" value="Move"></form><br/>'
     return html
 
 
