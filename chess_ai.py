@@ -1,3 +1,5 @@
+#!/usr/bin/python3 -w
+
 import chess
 import random
 from flask import Flask, Response, request
@@ -6,6 +8,9 @@ import time
 import base64
 
 app = Flask(__name__)
+# back rows for black and white
+BLACK_BACK = [56, 57, 58, 59, 60, 61, 62, 63]
+WHITE_BACK = [0, 1, 2, 3, 4, 5, 6, 7]
 
 def get_board_svg(board):
     """Returns an SVG representation of the current board state."""
@@ -28,6 +33,24 @@ def get_random_move():
     move = random.choice(legal_moves)
     return str(move)
 
+def pawn_queen_promotion(board, move):
+    """Checks whether the move to be performed could lead to a pawn promotion.
+       If so, the pawn always gets promoted to queen.
+
+    Args:
+        board: chess board
+        move: currently considered move to be performed
+
+    Returns:
+        move to be performed
+
+    """
+    piece = board.piece_at(move.from_square)
+    if piece is not None and piece.piece_type == chess.PAWN:
+        if move.to_square in BLACK_BACK or move.to_square in WHITE_BACK and move.promotion is None:
+            move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
+    return str(move)
+
 @app.route("/move")
 def move():
 
@@ -43,6 +66,7 @@ def move():
         if move is not None and move != "":
             hint_text_human = "human move: " + move
             try:
+                move = pawn_queen_promotion(board, chess.Move.from_uci(move))
                 board.push_uci(move)
                 human_move_performed = True
             except Exception as e:
