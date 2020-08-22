@@ -51,6 +51,7 @@ def move():
         human_move_performed = False
 
         if move is not None and move != "":
+            print("HUMAN MOVE: " + move)
             human_move = "human move: " + move
             try:
                 move = pawn_queen_promotion(board, chess.Move.from_uci(move))
@@ -63,11 +64,15 @@ def move():
                     exit(1)
 
         if human_move_performed and board.is_game_over():
+            # TODO: check for draw
             hint_text = "HUMAN WINS"
         elif human_move_performed:
-            move = get_random_move()
-            ai_move = "computer move: " + move
-            board.push_uci(move)
+            # move = get_random_move()
+            print("COMPUTER MOVE")
+            move = minimax(3, board, False)
+            print("COMPUTER MOVE: " + str(move))
+            ai_move = "computer move: " + str(move)
+            board.push_uci(str(move))
             if board.is_game_over():
                 hint_text = "AI WINS"
 
@@ -100,6 +105,98 @@ def pawn_queen_promotion(board, move):
         if move.to_square in BLACK_BACK or move.to_square in WHITE_BACK and move.promotion is None:
             move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
     return str(move)
+
+###################################################################
+###################################################################
+
+def get_piece_rating(piece):
+    """Returns a rating for the specified piece.
+
+    Args:
+        piece: chess piece
+
+    Returns:
+        rating for the piece
+
+    """
+    # pawn
+    if piece == "P" or piece == "p":
+        return 1
+    # knight or bishop
+    elif piece == "N" or piece == "n" or piece == "B" or piece == "b":
+        return 3
+    # rook
+    elif piece == "R" or piece == "r":
+        return 5
+    # queen
+    elif piece == "Q" or piece == "q":
+        return 9
+    # king
+    elif piece == 'K' or piece == 'k':
+        return 999999
+    return 0
+
+def evaluation(board):
+    """Evaluates the current board state.
+
+        Large values would favor white while small values would favor black.
+        --> white tries to maximize the evaluation
+        --> black tries to minimize the evaluation
+
+    Args:
+        board: current board
+
+    Returns:
+        evaluation value
+
+    """
+    val = 0
+    for i in range(64):
+        if board.piece_at(i) != None:
+            white = board.piece_at(i).color
+            piece_rating = get_piece_rating(str(board.piece_at(i)))
+            if white:
+                val += piece_rating
+            else:
+                val -= piece_rating
+    return val
+
+def minimax_step(depth, board, maximizing):
+
+    if depth == 0:
+        return evaluation(board)
+
+    if maximizing:
+        maxVal = float('-inf')
+        for move in board.legal_moves:
+            board.push_uci(str(move))
+            maxVal = max(maxVal, minimax_step(depth - 1, board, not maximizing))
+            board.pop()
+        return maxVal
+    else:
+        minVal = float('inf')
+        for move in board.legal_moves:
+            board.push_uci(str(move))
+            minVal = min(minVal, minimax_step(depth - 1, board, not maximizing))
+            board.pop()
+        return minVal
+
+def minimax(depth, board, maximizing):
+
+    bestVal = float('inf')
+    bestMove = None
+
+    for move in board.legal_moves:
+        board.push_uci(str(move))
+        val = min(bestVal, minimax_step(depth - 1, board, not maximizing))
+        board.pop()
+        if val < bestVal:
+            bestVal = val
+            bestMove = move
+    return bestMove
+
+###################################################################
+###################################################################
 
 if __name__ == '__main__':
     board = chess.Board()
