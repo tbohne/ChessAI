@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -w
+#!/usr/bin/python3
 
 import chess
 import chess.svg
@@ -13,13 +13,14 @@ BLACK_BACK = [56, 57, 58, 59, 60, 61, 62, 63]
 WHITE_BACK = [0, 1, 2, 3, 4, 5, 6, 7]
 
 @app.route("/")
-def root(ai_move="", human_move="", hint_text=""):
+def root(ai_move="", human_move="", hint_text="", score=0):
     """Returns the html page that displays the current board state.
 
     Args:
         ai_move: last move of the AI
         human_move: last move of the human player
         hint_text: info msg for the user (invalid moves etc.)
+        score: current evaluation of the board from white's perspective
 
     Returns:
         html page with current board state
@@ -31,6 +32,8 @@ def root(ai_move="", human_move="", hint_text=""):
     html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % ai_move
     html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % human_move
     html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % hint_text
+    color = "E10000" if score < 0 else "00D439"
+    html += '<p style="color: %s;"><b>score: %s</b></p>' % (color, str(score))
     html += '</body></html>'
     return html
 
@@ -76,7 +79,8 @@ def move():
             if board.is_game_over():
                 hint_text = "AI WINS"
 
-    return root(ai_move, human_move, hint_text)
+    score = evaluation(board)
+    return root(ai_move, human_move, hint_text, score)
 
 def get_board_svg(board):
     """Returns an SVG representation of the current board state."""
