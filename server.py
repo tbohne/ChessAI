@@ -2,7 +2,6 @@
 
 from flask import Flask, request
 from chess_ai import ChessAI
-import chess
 
 app = Flask(__name__)
 
@@ -39,41 +38,8 @@ def move():
         html page for updated board after performed moves
 
     """
-    ai_move = ""
-    human_move = ""
-    hint_text = ""
-
-    if not ai.board.is_game_over():
-        move = request.args.get('move', default="")
-        human_move_performed = False
-
-        if move is not None and move != "":
-            print("HUMAN MOVE: " + move)
-            human_move = "human move: " + move
-            try:
-                move = ai.pawn_queen_promotion(chess.Move.from_uci(move))
-                ai.board.push_uci(move)
-                human_move_performed = True
-            except Exception as e:
-                print(e)
-                human_move = "invalid move: " + move
-                if (move == "q"):
-                    exit(1)
-
-        if human_move_performed and ai.board.is_game_over():
-            # TODO: check for draw
-            hint_text = "HUMAN WINS"
-        elif human_move_performed:
-            # move = get_random_move()
-            print("COMPUTER MOVE")
-            move = ai.minimax(3, ai.board, False)
-            print("COMPUTER MOVE: " + str(move))
-            ai_move = "computer move: " + str(move)
-            ai.board.push_uci(str(move))
-            if ai.board.is_game_over():
-                hint_text = "AI WINS"
-
-    score = ai.evaluation(ai.board)
+    move = request.args.get('move', default="")
+    ai_move, human_move, hint_text, score = ai.move(move)
     return root(ai_move, human_move, hint_text, score)
 
 if __name__ == '__main__':

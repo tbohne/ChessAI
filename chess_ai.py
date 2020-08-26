@@ -42,6 +42,45 @@ class ChessAI:
                 move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
         return str(move)
 
+    def move(self, move):
+
+        ai_move = ""
+        human_move = ""
+        hint_text = ""
+
+        if not self.board.is_game_over():
+            
+            human_move_performed = False
+
+            if move is not None and move != "":
+                print("HUMAN MOVE: " + move)
+                human_move = "human move: " + move
+                try:
+                    move = self.pawn_queen_promotion(chess.Move.from_uci(move))
+                    self.board.push_uci(move)
+                    human_move_performed = True
+                except Exception as e:
+                    print(e)
+                    human_move = "invalid move: " + move
+                    if (move == "q"):
+                        exit(1)
+
+            if human_move_performed and self.board.is_game_over():
+                # TODO: check for draw
+                hint_text = "HUMAN WINS"
+            elif human_move_performed:
+                # move = get_random_move()
+                print("COMPUTER MOVE")
+                move = self.minimax(3, self.board, False)
+                print("COMPUTER MOVE: " + str(move))
+                ai_move = "computer move: " + str(move)
+                self.board.push_uci(str(move))
+                if self.board.is_game_over():
+                    hint_text = "self WINS"
+
+        score = self.evaluation(self.board)
+        return ai_move, human_move, hint_text, score
+
 ###################################################################
 ###################################################################
 
