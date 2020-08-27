@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 
+import base64
+import random
+
 import chess
 import chess.svg
-import random
-import base64
 
 # back rows for black and white
 BLACK_BACK = [56, 57, 58, 59, 60, 61, 62, 63]
 WHITE_BACK = [0, 1, 2, 3, 4, 5, 6, 7]
+
 
 class ChessAI:
 
@@ -15,21 +17,31 @@ class ChessAI:
         self.board = chess.Board()
 
     def get_board_svg(self):
-        """Returns an SVG representation of the current board state."""
-        return base64.b64encode(chess.svg.board(board=self.board).encode('utf-8')).decode('utf-8')
+        """Provides an SVG representation of the current board state.
+
+        Returns:
+            SVG representation of current board state
+
+        """
+        svg = chess.svg.board(board=self.board)
+        return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
 
     def get_random_move(self):
-        """Returns a random move from the set of legal moves."""
+        """Returns a random move from the set of legal moves.
+
+        Returns:
+            random legal move
+
+        """
         legal_moves = [move for move in self.board.legal_moves]
         move = random.choice(legal_moves)
         return str(move)
 
     def pawn_queen_promotion(self, move):
         """Checks whether the move to be performed could lead to a pawn promotion.
-        If so, the pawn always gets promoted to queen.
+        If so, the pawn always gets promoted to a queen.
 
         Args:
-            board: chess board
             move: currently considered move to be performed
 
         Returns:
@@ -37,13 +49,28 @@ class ChessAI:
 
         """
         piece = self.board.piece_at(move.from_square)
-        if piece is not None and piece.piece_type == chess.PAWN:
-            if move.to_square in BLACK_BACK or move.to_square in WHITE_BACK and move.promotion is None:
-                move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
+        is_pawn = piece is not None and piece.piece_type == chess.PAWN
+        move_to_back = move.to_square in BLACK_BACK or move.to_square in WHITE_BACK
+
+        if is_pawn and move_to_back and move.promotion is None:
+            move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
+
         return str(move)
 
     def move(self, move):
+        """Performs one move of the human player, an answering move of the AI and
+        checks for game over situations.
 
+        Args:
+            move: human move to be performed
+
+        Returns:
+            ai_move: performed move of the AI
+            human_move: performed move of the human player
+            hint_text: optional hint msg (e.g. invalid move)
+            score: current evaluation of the board from white's perspective
+
+        """
         ai_move = human_move = hint_text = ""
 
         if not self.board.is_game_over():
@@ -58,14 +85,13 @@ class ChessAI:
                 except Exception as e:
                     print(e)
                     human_move = "invalid move: " + move
-                    if (move == "q"):
+                    if move == "q":
                         exit(1)
 
             if human_move_performed and self.board.is_game_over():
                 # TODO: check for draw
                 hint_text = "HUMAN WINS"
             elif human_move_performed:
-                # move = get_random_move()
                 move = self.minimax(3, self.board, False)
                 ai_move = "computer move: " + str(move)
                 self.board.push_uci(str(move))
@@ -74,9 +100,6 @@ class ChessAI:
 
         score = self.evaluation(self.board)
         return ai_move, human_move, hint_text, score
-
-###################################################################
-###################################################################
 
     def get_piece_rating(self, piece):
         """Returns a rating for the specified piece.
@@ -102,7 +125,7 @@ class ChessAI:
             return 9
         # king
         elif piece == 'K' or piece == 'k':
-            return 999999
+            return float('inf')
         return 0
 
     def evaluation(self, board):
@@ -131,7 +154,17 @@ class ChessAI:
         return val
 
     def minimax_step(self, depth, board, maximizing):
+        """Performs a step in the minimax algorithm.
 
+        Args:
+            depth: current depth in minimax tree
+            board: current board to be considered
+            maximizing: whether the current step is a maximizing step
+
+        Returns:
+            minimax value
+
+        """
         if depth == 0:
             return self.evaluation(board)
 
@@ -151,18 +184,26 @@ class ChessAI:
             return minVal
 
     def minimax(self, depth, board, maximizing):
+        """First minimax step that calls the recursive procedure.
 
+        Args:
+            depth: depth of minimax tree
+            board: current board to be considered
+            maximizing: whether the current step is a maximizing step
+
+        Returns:
+            best move to be performed
+
+        """
         bestVal = float('inf')
         bestMove = None
 
         for move in board.legal_moves:
             board.push_uci(str(move))
-            val = min(bestVal, self.minimax_step(depth - 1, board, not maximizing))
+            val = min(bestVal, self.minimax_step(
+                depth - 1, board, not maximizing))
             board.pop()
             if val < bestVal:
                 bestVal = val
                 bestMove = move
         return bestMove
-
-###################################################################
-###################################################################
