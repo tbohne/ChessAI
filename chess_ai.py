@@ -2,6 +2,7 @@
 
 import base64
 import random
+import sys
 
 import chess
 import chess.svg
@@ -33,7 +34,7 @@ class ChessAI:
             random legal move
 
         """
-        legal_moves = [move for move in self.board.legal_moves]
+        legal_moves = list(self.board.legal_moves)
         move = random.choice(legal_moves)
         return str(move)
 
@@ -82,11 +83,11 @@ class ChessAI:
                     move = self.pawn_queen_promotion(chess.Move.from_uci(move))
                     self.board.push_uci(move)
                     human_move_performed = True
-                except Exception as e:
-                    print(e)
+                except Exception as err:
+                    print(err)
                     human_move = "invalid move: " + move
                     if move == "q":
-                        exit(1)
+                        sys.exit(1)
 
             if human_move_performed and self.board.is_game_over():
                 # TODO: check for draw
@@ -112,20 +113,20 @@ class ChessAI:
 
         """
         # pawn
-        if piece == "P" or piece == "p":
+        if piece in ('P', 'p'):
             return 1
         # knight or bishop
-        elif piece == "N" or piece == "n" or piece == "B" or piece == "b":
+        if piece in ('N', 'n', 'B', 'b'):
             return 3
         # rook
-        elif piece == "R" or piece == "r":
+        if piece in ('R', 'r'):
             return 5
         # queen
-        elif piece == "Q" or piece == "q":
+        if piece in ('Q', 'q'):
             return 9
         # king
-        elif piece == 'K' or piece == 'k':
-            return float('inf')
+        if piece in ('K', 'k'):
+            return 9999
         return 0
 
     def evaluation(self, board):
@@ -144,9 +145,9 @@ class ChessAI:
         """
         val = 0
         for i in range(64):
-            if self.board.piece_at(i) != None:
-                white = self.board.piece_at(i).color
-                piece_rating = self.get_piece_rating(str(self.board.piece_at(i)))
+            if board.piece_at(i) is not None:
+                white = board.piece_at(i).color
+                piece_rating = self.get_piece_rating(str(board.piece_at(i)))
                 if white:
                     val += piece_rating
                 else:
@@ -169,19 +170,19 @@ class ChessAI:
             return self.evaluation(board)
 
         if maximizing:
-            maxVal = float('-inf')
+            max_val = float('-inf')
             for move in board.legal_moves:
                 board.push_uci(str(move))
-                maxVal = max(maxVal, self.minimax_step(depth - 1, board, not maximizing))
+                max_val = max(max_val, self.minimax_step(depth - 1, board, not maximizing))
                 board.pop()
-            return maxVal
-        else:
-            minVal = float('inf')
-            for move in board.legal_moves:
-                board.push_uci(str(move))
-                minVal = min(minVal, self.minimax_step(depth - 1, board, not maximizing))
-                board.pop()
-            return minVal
+            return max_val
+
+        min_val = float('inf')
+        for move in board.legal_moves:
+            board.push_uci(str(move))
+            min_val = min(min_val, self.minimax_step(depth - 1, board, not maximizing))
+            board.pop()
+        return min_val
 
     def minimax(self, depth, board, maximizing):
         """First minimax step that calls the recursive procedure.
@@ -195,15 +196,14 @@ class ChessAI:
             best move to be performed
 
         """
-        bestVal = float('inf')
-        bestMove = None
+        best_val = float('inf')
+        best_move = None
 
         for move in board.legal_moves:
             board.push_uci(str(move))
-            val = min(bestVal, self.minimax_step(
-                depth - 1, board, not maximizing))
+            val = min(best_val, self.minimax_step(depth - 1, board, not maximizing))
             board.pop()
-            if val < bestVal:
-                bestVal = val
-                bestMove = move
-        return bestMove
+            if val < best_val:
+                best_val = val
+                best_move = move
+        return best_move
