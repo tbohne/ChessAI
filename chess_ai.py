@@ -3,6 +3,7 @@
 import base64
 import random
 import sys
+from typing import Tuple
 
 import chess
 import chess.svg
@@ -38,7 +39,7 @@ class ChessAI:
         move = random.choice(legal_moves)
         return str(move)
 
-    def pawn_queen_promotion(self, move):
+    def pawn_queen_promotion(self, move: chess.Move) -> str:
         """Checks whether the move to be performed could lead to a pawn promotion.
         If so, the pawn always gets promoted to a queen.
 
@@ -58,7 +59,7 @@ class ChessAI:
 
         return str(move)
 
-    def move(self, move):
+    def move(self, move: str) -> Tuple[str, str, str, int]:
         """Performs one move of the human player, an answering move of the AI and
         checks for game over situations.
 
@@ -102,7 +103,7 @@ class ChessAI:
         score = self.evaluation(self.board)
         return ai_move, human_move, hint_text, score
 
-    def get_piece_rating(self, piece):
+    def get_piece_rating(self, piece: str) -> int:
         """Returns a rating for the specified piece.
 
         Args:
@@ -129,7 +130,7 @@ class ChessAI:
             return 9999
         return 0
 
-    def evaluation(self, board):
+    def evaluation(self, board: chess.Board) -> int:
         """Evaluates the current board state.
 
             Large values would favor white while small values would favor black.
@@ -154,7 +155,7 @@ class ChessAI:
                     val -= piece_rating
         return val
 
-    def minimax_step(self, depth, board, maximizing):
+    def minimax_step(self, depth: int, board: chess.Board, maximizing: bool) -> int:
         """Performs a step in the minimax algorithm.
 
         Args:
@@ -170,21 +171,21 @@ class ChessAI:
             return self.evaluation(board)
 
         if maximizing:
-            max_val = float('-inf')
+            max_val = int('-inf')
             for move in board.legal_moves:
                 board.push_uci(str(move))
                 max_val = max(max_val, self.minimax_step(depth - 1, board, not maximizing))
                 board.pop()
             return max_val
 
-        min_val = float('inf')
+        min_val = int('inf')
         for move in board.legal_moves:
             board.push_uci(str(move))
             min_val = min(min_val, self.minimax_step(depth - 1, board, not maximizing))
             board.pop()
         return min_val
 
-    def minimax(self, depth, board, maximizing):
+    def minimax(self, depth: int, board: chess.Board, maximizing: bool) -> chess.Move:
         """First minimax step that calls the recursive procedure.
 
         Args:
@@ -196,7 +197,7 @@ class ChessAI:
             best move to be performed
 
         """
-        best_val = float('inf')
+        best_val = int('inf')
         best_move = None
 
         for move in board.legal_moves:

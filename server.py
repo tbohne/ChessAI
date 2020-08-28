@@ -6,7 +6,7 @@ from chess_ai import ChessAI
 app = Flask(__name__)
 
 @app.route("/")
-def root(ai_move="", human_move="", hint_text="", score=0):
+def root(ai_move="", human_move="", hint_text="", score=0) -> str:
     """Returns the html page that displays the current board state.
 
     Args:
@@ -31,7 +31,7 @@ def root(ai_move="", human_move="", hint_text="", score=0):
     return html
 
 @app.route("/move")
-def move():
+def move() -> str:
     """Performs a human and an answering AI move and checks for game over situations.
 
     Returns:
