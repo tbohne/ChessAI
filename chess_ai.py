@@ -155,7 +155,7 @@ class ChessAI:
                     val -= piece_rating
         return val
 
-    def minimax_step(self, depth: int, board: chess.Board, maximizing: bool) -> int:
+    def minimax_step(self, depth: int, board: chess.Board, maximizing: bool) -> float:
         """Performs a step in the minimax algorithm.
 
         Args:
@@ -171,7 +171,7 @@ class ChessAI:
             return self.evaluation(board)
 
         if maximizing:
-            max_val = int('-inf')
+            max_val = float('-inf')
             for move in board.legal_moves:
                 board.push_uci(str(move))
                 max_val = max(max_val, self.minimax_step(
@@ -179,7 +179,7 @@ class ChessAI:
                 board.pop()
             return max_val
 
-        min_val = int('inf')
+        min_val = float('inf')
         for move in board.legal_moves:
             board.push_uci(str(move))
             min_val = min(min_val, self.minimax_step(
@@ -199,7 +199,7 @@ class ChessAI:
             best move to be performed
 
         """
-        best_val = int('inf')
+        best_val = float('inf')
         best_move = None
 
         for move in board.legal_moves:
