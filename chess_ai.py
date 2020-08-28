@@ -94,13 +94,13 @@ class ChessAI:
                 # TODO: check for draw
                 hint_text = "HUMAN WINS"
             elif human_move_performed:
-                move = self.minimax(3, self.board, False)
+                move = self.minimax(3, False)
                 ai_move = "computer move: " + str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
                     hint_text = "AI WINS"
 
-        score = self.evaluation(self.board)
+        score = self.evaluation()
         return ai_move, human_move, hint_text, score
 
     def get_piece_rating(self, piece: str) -> int:
@@ -130,15 +130,12 @@ class ChessAI:
             return 9999
         return 0
 
-    def evaluation(self, board: chess.Board) -> int:
+    def evaluation(self) -> int:
         """Evaluates the current board state.
 
             Large values would favor white while small values would favor black.
             --> white tries to maximize the evaluation
             --> black tries to minimize the evaluation
-
-        Args:
-            board: current board
 
         Returns:
             evaluation value
@@ -146,21 +143,20 @@ class ChessAI:
         """
         val = 0
         for i in range(64):
-            if board.piece_at(i) is not None:
-                white = board.piece_at(i).color
-                piece_rating = self.get_piece_rating(str(board.piece_at(i)))
+            if self.board.piece_at(i) is not None:
+                white = self.board.piece_at(i).color
+                piece_rating = self.get_piece_rating(str(self.board.piece_at(i)))
                 if white:
                     val += piece_rating
                 else:
                     val -= piece_rating
         return val
 
-    def minimax_step(self, depth: int, board: chess.Board, maximizing: bool) -> float:
+    def minimax_step(self, depth: int, maximizing: bool) -> float:
         """Performs a step in the minimax algorithm.
 
         Args:
             depth: current depth in minimax tree
-            board: current board to be considered
             maximizing: whether the current step is a maximizing step
 
         Returns:
@@ -168,31 +164,30 @@ class ChessAI:
 
         """
         if depth == 0:
-            return self.evaluation(board)
+            return self.evaluation()
 
         if maximizing:
             max_val = float('-inf')
-            for move in board.legal_moves:
-                board.push_uci(str(move))
-                max_val = max(max_val, self.minimax_step(
-                    depth - 1, board, not maximizing))
-                board.pop()
+            for move in self.board.legal_moves:
+                self.board.push_uci(str(move))
+                max_val = max(max_val, self.minimax_step(depth - 1, not maximizing))
+                self.board.pop()
             return max_val
 
         min_val = float('inf')
-        for move in board.legal_moves:
-            board.push_uci(str(move))
-            min_val = min(min_val, self.minimax_step(
-                depth - 1, board, not maximizing))
-            board.pop()
+        for move in self.board.legal_moves:
+            self.board.push_uci(str(move))
+            min_val = min(min_val, self.minimax_step(depth - 1, not maximizing))
+            self.board.pop()
         return min_val
 
-    def minimax(self, depth: int, board: chess.Board, maximizing: bool) -> chess.Move:
+    def minimax(self, depth: int, maximizing: bool) -> chess.Move:
         """First minimax step that calls the recursive procedure.
+        Since it's black's move here and black tries to minimize the evaluation function,
+        the first minimax step should be a minimizing one.
 
         Args:
             depth: depth of minimax tree
-            board: current board to be considered
             maximizing: whether the current step is a maximizing step
 
         Returns:
@@ -202,11 +197,10 @@ class ChessAI:
         best_val = float('inf')
         best_move = None
 
-        for move in board.legal_moves:
-            board.push_uci(str(move))
-            val = min(best_val, self.minimax_step(
-                depth - 1, board, not maximizing))
-            board.pop()
+        for move in self.board.legal_moves:
+            self.board.push_uci(str(move))
+            val = min(best_val, self.minimax_step(depth - 1, not maximizing))
+            self.board.pop()
             if val < best_val:
                 best_val = val
                 best_move = move
