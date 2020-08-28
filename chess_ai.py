@@ -174,14 +174,16 @@ class ChessAI:
             max_val = int('-inf')
             for move in board.legal_moves:
                 board.push_uci(str(move))
-                max_val = max(max_val, self.minimax_step(depth - 1, board, not maximizing))
+                max_val = max(max_val, self.minimax_step(
+                    depth - 1, board, not maximizing))
                 board.pop()
             return max_val
 
         min_val = int('inf')
         for move in board.legal_moves:
             board.push_uci(str(move))
-            min_val = min(min_val, self.minimax_step(depth - 1, board, not maximizing))
+            min_val = min(min_val, self.minimax_step(
+                depth - 1, board, not maximizing))
             board.pop()
         return min_val
 
@@ -202,7 +204,8 @@ class ChessAI:
 
         for move in board.legal_moves:
             board.push_uci(str(move))
-            val = min(best_val, self.minimax_step(depth - 1, board, not maximizing))
+            val = min(best_val, self.minimax_step(
+                depth - 1, board, not maximizing))
             board.pop()
             if val < best_val:
                 best_val = val
