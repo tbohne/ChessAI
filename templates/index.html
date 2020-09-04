@@ -1,0 +1,19 @@
+<html>
+    <head></head>
+
+    <body style="background-color: #6e6862; text-align: center">
+
+        <img width=680 src="{{ board_img }}"></img>
+
+        <form action="/move">
+            <input name="move" type="text"></input><br/>
+            <input type="submit" value="Move"></input>
+        </form>
+
+        <p style="color: #F5F5DC;"><b>{{ ai_move }}</b></p>
+        <p style="color: #F5F5DC;"><b>{{ human_move }}</b></p>
+        <p style="color: #F5F5DC;"><b>{{ hint_text }}</b></p>
+        <p style="color: #F5F5DC;"><b>score: {{ score }}</b></p>
+
+    </body>
+</html>
