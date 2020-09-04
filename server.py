@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from flask import Flask, request
+from flask import Flask, render_template, request
 
 from chess_ai import ChessAI
 
@@ -21,17 +21,11 @@ def root(ai_move="", human_move="", hint_text="", score=0) -> str:
         html page with current board state
 
     """
-    html = '<html><head></head><body style="background-color: #6e6862; text-align: center">'
-    html += '<img width=680 src="data:image/svg+xml;base64,%s"></img>' % ai.get_board_svg()
-    html += '<form action="/move"><input name="move" type="text"></input><br/>'
-    html += '<input type="submit" value="Move"></input></form>'
-    html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % ai_move
-    html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % human_move
-    html += '<p style="color: #F5F5DC;"><b>%s</b></p>' % hint_text
-    color = "E10000" if score < 0 else "00D439"
-    html += '<p style="color: %s;"><b>score: %s</b></p>' % (color, str(score))
-    html += '</body></html>'
-    return html
+
+    img = "data:image/svg+xml;base64," + ai.get_board_svg()
+
+    return render_template('index.html', board_img=img, ai_move=ai_move,
+                           human_move=human_move, hint_text=hint_text, score=str(score))
 
 
 @app.route("/move")
