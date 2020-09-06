@@ -79,14 +79,15 @@ class ChessAI:
             human_move_performed = False
 
             if move is not None and move != "":
-                human_move = "human move: " + move
+                human_move = move
                 try:
                     move = self.pawn_queen_promotion(chess.Move.from_uci(move))
                     self.board.push_uci(move)
                     human_move_performed = True
                 except Exception as err:
                     print(err)
-                    human_move = "invalid move: " + move
+                    hint_text = "invalid move: " + move
+                    human_move = ""
                     if move == "q":
                         sys.exit(1)
 
@@ -95,7 +96,7 @@ class ChessAI:
                 hint_text = "HUMAN WINS"
             elif human_move_performed:
                 move = self.minimax(3, False)
-                ai_move = "computer move: " + str(move)
+                ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
                     hint_text = "AI WINS"
