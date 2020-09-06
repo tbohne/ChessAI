@@ -15,6 +15,15 @@ body {
 
 .score {
     font-size: 38px;
+    color: #F5F5DC;
+}
+
+.pos_score {
+    color: #33FF00;
+}
+
+.neg_score {
+    color: #FF0000;
 }
 
 .info {

@@ -24,8 +24,12 @@ def root(ai_move="", human_move="", hint_text="", score=0) -> str:
 
     img = "data:image/svg+xml;base64," + ai.get_board_svg()
 
-    return render_template('index.html', board_img=img, ai_move=ai_move,
-                           human_move=human_move, hint_text=hint_text, score=str(score))
+    score_class = ""
+    if score != 0:
+        score_class = "neg_score" if score < 0 else "pos_score"
+
+    return render_template('index.html', board_img=img, ai_move=ai_move, human_move=human_move,
+                           hint_text=hint_text, score=str(score), score_class=score_class)
 
 
 @app.route("/move")

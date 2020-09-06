@@ -17,9 +17,7 @@
         <div class="pure-g">
 
             <div class="pure-u-1-5 info_bar">
-                <div class="score">
-                    <p><b>SCORE: {{ score }}</b></p>
-                </div>
+                <p class="score"><b>SCORE: <span class="{{ score_class }}">{{ score }}</span></b></p>
                 <div class="info">
                     <p><b>COMPUTER: {{ ai_move }}</b></p>
                     <p><b>PLAYER: {{ human_move }}</b></p>
