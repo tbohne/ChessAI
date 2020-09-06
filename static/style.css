@@ -9,6 +9,20 @@ body {
     margin: 5px;
 }
 
+.board {
+    margin-right: 400px;
+}
+
+.score {
+    font-size: 38px;
+}
+
+.info {
+    position: relative;
+    font-size: 26px;
+    top: 30%;
+}
+
 p, a {
     color: #F5F5DC;
 }

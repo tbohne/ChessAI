@@ -14,22 +14,29 @@
 
     <body>
 
-        <img width=680 src="{{ board_img }}"></img>
-
         <div class="pure-g">
-            <div class="pure-u-1">
 
-                <form class="pure-form" action="/move">
-                    <input class="def" name="move" type="text"></input><br/>
-                    <input class="pure-button def" type="submit" value="Move"></input>
-                </form>
-
-                <p><b>{{ ai_move }}</b></p>
-                <p><b>{{ human_move }}</b></p>
-                <p><b>{{ hint_text }}</b></p>
-                <p><b>score: {{ score }}</b></p>
-
+            <div class="pure-u-1-5 info_bar">
+                <div class="score">
+                    <p><b>SCORE: {{ score }}</b></p>
+                </div>
+                <div class="info">
+                    <p><b>COMPUTER: {{ ai_move }}</b></p>
+                    <p><b>PLAYER: {{ human_move }}</b></p>
+                </div>
             </div>
+
+            <div class="pure-u-4-5">
+                <div class="board">
+                    <img width=680 src="{{ board_img }}"></img>
+                    <form class="pure-form" action="/move">
+                        <input class="def" name="move" type="text"></input><br/>
+                        <input class="pure-button def" type="submit" value="Move"></input>
+                        <p><b>{{ hint_text }}</b></p>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </body>
 </html>
