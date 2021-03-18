@@ -11,6 +11,7 @@ import chess.svg
 # back rows for black and white
 BLACK_BACK = [56, 57, 58, 59, 60, 61, 62, 63]
 WHITE_BACK = [0, 1, 2, 3, 4, 5, 6, 7]
+MINIMAX_DEPTH = 3
 
 
 class ChessAI:
@@ -75,9 +76,9 @@ class ChessAI:
             else:
                 return "AI WINS"
         elif self.board.is_stalemate():
-            return "stalemate"
+            return "STALEMATE"
         elif self.board.is_insufficient_material():
-            return "draw - insufficient material"
+            return "DRAW - INSUFFICIENT MATERIAL"
 
     def move(self, move: str) -> Tuple[str, str, str, int]:
         """Performs one move of the human player, an answering move of the AI and
@@ -114,7 +115,7 @@ class ChessAI:
             if human_move_performed and self.board.is_game_over():
                 hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
-                move = self.minimax(3, False)
+                move = self.minimax(MINIMAX_DEPTH, False)
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
@@ -123,7 +124,8 @@ class ChessAI:
         score = self.evaluation()
         return ai_move, human_move, hint_text, score
 
-    def get_piece_rating(self, piece: str) -> int:
+    @staticmethod
+    def get_piece_rating(piece: str) -> int:
         """Returns a rating for the specified piece.
 
         Args:
@@ -176,7 +178,7 @@ class ChessAI:
         """Performs a step in the minimax algorithm.
 
         Args:
-            depth: current depth in minimax tree
+            depth:      current depth in minimax tree
             maximizing: whether the current step is a maximizing step
 
         Returns:
@@ -207,7 +209,7 @@ class ChessAI:
         the first minimax step should be a minimizing one.
 
         Args:
-            depth: depth of minimax tree
+            depth:      depth of minimax tree
             maximizing: whether the current step is a maximizing step
 
         Returns:
