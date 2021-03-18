@@ -4,6 +4,8 @@ import base64
 import random
 import sys
 from typing import Tuple
+import minimax
+import eval
 
 import chess
 import chess.svg
@@ -115,115 +117,11 @@ class ChessAI:
             if human_move_performed and self.board.is_game_over():
                 hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
-                move = self.minimax(MINIMAX_DEPTH, False)
+                move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
                     self.determine_game_over_situation(False)
 
-        score = self.evaluation()
+        score = eval.evaluation(self.board)
         return ai_move, human_move, hint_text, score
-
-    @staticmethod
-    def get_piece_rating(piece: str) -> int:
-        """Returns a rating for the specified piece.
-
-        Args:
-            piece: chess piece
-
-        Returns:
-            rating for the piece
-
-        """
-        # pawn
-        if piece in ('P', 'p'):
-            return 1
-        # knight or bishop
-        if piece in ('N', 'n', 'B', 'b'):
-            return 3
-        # rook
-        if piece in ('R', 'r'):
-            return 5
-        # queen
-        if piece in ('Q', 'q'):
-            return 9
-        # king
-        if piece in ('K', 'k'):
-            return 9999
-        return 0
-
-    def evaluation(self) -> int:
-        """Evaluates the current board state.
-
-            Large values would favor white while small values would favor black.
-            --> white tries to maximize the evaluation
-            --> black tries to minimize the evaluation
-
-        Returns:
-            evaluation value
-
-        """
-        val = 0
-        for i in range(64):
-            if self.board.piece_at(i) is not None:
-                white = self.board.piece_at(i).color
-                piece_rating = self.get_piece_rating(str(self.board.piece_at(i)))
-                if white:
-                    val += piece_rating
-                else:
-                    val -= piece_rating
-        return val
-
-    def minimax_step(self, depth: int, maximizing: bool) -> float:
-        """Performs a step in the minimax algorithm.
-
-        Args:
-            depth:      current depth in minimax tree
-            maximizing: whether the current step is a maximizing step
-
-        Returns:
-            minimax value
-
-        """
-        if depth == 0:
-            return self.evaluation()
-
-        if maximizing:
-            max_val = float('-inf')
-            for move in self.board.legal_moves:
-                self.board.push_uci(str(move))
-                max_val = max(max_val, self.minimax_step(depth - 1, not maximizing))
-                self.board.pop()
-            return max_val
-
-        min_val = float('inf')
-        for move in self.board.legal_moves:
-            self.board.push_uci(str(move))
-            min_val = min(min_val, self.minimax_step(depth - 1, not maximizing))
-            self.board.pop()
-        return min_val
-
-    def minimax(self, depth: int, maximizing: bool) -> chess.Move:
-        """First minimax step that calls the recursive procedure.
-        Since it's black's move here and black tries to minimize the evaluation function,
-        the first minimax step should be a minimizing one.
-
-        Args:
-            depth:      depth of minimax tree
-            maximizing: whether the current step is a maximizing step
-
-        Returns:
-            best move to be performed
-
-        """
-        best_val = float('inf')
-        best_move = None
-
-        for move in self.board.legal_moves:
-            self.board.push_uci(str(move))
-            val = min(best_val, self.minimax_step(depth - 1, not maximizing))
-            self.board.pop()
-            if val < best_val:
-                best_val = val
-                best_move = move
-        return best_move
