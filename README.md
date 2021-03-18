@@ -15,4 +15,5 @@ Approach to build a program that beats me in the game of chess.
 - already surprinsingly good opponent, but beatable
 - **improvement**
     - [alpha–beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
-    - decrease the number of nodes that are evaluated by the minimax algorithm 
+    - decrease the number of nodes that are evaluated by the minimax algorithm and therefore the computation time
+    - allows to search faster and works reasonably up to a depth of *4*

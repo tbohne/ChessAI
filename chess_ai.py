@@ -13,7 +13,7 @@ import chess.svg
 # back rows for black and white
 BLACK_BACK = [56, 57, 58, 59, 60, 61, 62, 63]
 WHITE_BACK = [0, 1, 2, 3, 4, 5, 6, 7]
-MINIMAX_DEPTH = 3
+MINIMAX_DEPTH = 4
 
 
 class ChessAI:

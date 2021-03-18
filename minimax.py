@@ -3,7 +3,7 @@ import eval
 import chess
 
 
-def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: int, beta: int) -> float:
+def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: float, beta: float) -> float:
     """Performs a step in the minimax algorithm.
 
     Args:
@@ -61,7 +61,7 @@ def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
 
     for move in board.legal_moves:
         board.push_uci(str(move))
-        val = min(best_val, minimax_step(depth - 1, not maximizing, board, int('-inf'), int('inf')))
+        val = min(best_val, minimax_step(depth - 1, not maximizing, board, float('-inf'), float('inf')))
         board.pop()
         if val < best_val:
             best_val = val
