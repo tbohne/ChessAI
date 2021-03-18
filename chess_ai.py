@@ -59,6 +59,26 @@ class ChessAI:
 
         return str(move)
 
+    def determine_game_over_situation(self, human_move: bool) -> str:
+        """Determines the kind of game over situation (checkmate, stalemate, draw).
+
+        Args:
+            human_move: whether the last move is by human (AI otherwise)
+
+        Returns:
+            hint text describing the game over situation
+
+        """
+        if self.board.is_checkmate():
+            if human_move:
+                return "HUMAN WINS"
+            else:
+                return "AI WINS"
+        elif self.board.is_stalemate():
+            return "stalemate"
+        elif self.board.is_insufficient_material():
+            return "draw - insufficient material"
+
     def move(self, move: str) -> Tuple[str, str, str, int]:
         """Performs one move of the human player, an answering move of the AI and
         checks for game over situations.
@@ -67,10 +87,10 @@ class ChessAI:
             move: human move to be performed
 
         Returns:
-            ai_move: performed move of the AI
+            ai_move:    performed move of the AI
             human_move: performed move of the human player
-            hint_text: optional hint msg (e.g. invalid move)
-            score: current evaluation of the board from white's perspective
+            hint_text:  optional hint msg (e.g. invalid move)
+            score:      current evaluation of the board from white's perspective
 
         """
         ai_move = human_move = hint_text = ""
@@ -92,14 +112,13 @@ class ChessAI:
                         sys.exit(1)
 
             if human_move_performed and self.board.is_game_over():
-                # TODO: check for draw
-                hint_text = "HUMAN WINS"
+                hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
                 move = self.minimax(3, False)
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
-                    hint_text = "AI WINS"
+                    self.determine_game_over_situation(False)
 
         score = self.evaluation()
         return ai_move, human_move, hint_text, score

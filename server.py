@@ -12,10 +12,10 @@ def root(ai_move="", human_move="", hint_text="", score=0) -> str:
     """Returns the html page that displays the current board state.
 
     Args:
-        ai_move: last move of the AI
+        ai_move:    last move of the AI
         human_move: last move of the human player
-        hint_text: info msg for the user (invalid moves etc.)
-        score: current evaluation of the board from white's perspective
+        hint_text:  info msg for the user (invalid moves etc.)
+        score:      current evaluation of the board from white's perspective
 
     Returns:
         html page with current board state
