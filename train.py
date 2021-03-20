@@ -66,38 +66,44 @@ class Net(nn.Module):
         # value oputput
         return torch.tanh(x)
 
-chess_dataset = ChessValueDataset()
-model = Net()
-num_epochs = 10
-device = 'cpu' #torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+if __name__ == '__main__':
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-loss_function = nn.CrossEntropyLoss()
-model.to(device)
+    chess_dataset = ChessValueDataset()
+    model = Net()
+    num_epochs = 10
+    device = 'cpu' #torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-train_loader = torch.utils.data.DataLoader(chess_dataset, batch_size=256, shuffle=True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    loss_function = nn.CrossEntropyLoss()
+    model.to(device)
 
-total_step = len(chess_dataset)
-for epoch in range(num_epochs):
-    for i, (input, target) in enumerate(train_loader):
+    train_loader = torch.utils.data.DataLoader(chess_dataset, batch_size=256, shuffle=True)
 
-        target = target.to(device)
+    total_step = len(chess_dataset)
+    for epoch in range(num_epochs):
+        for i, (input, target) in enumerate(train_loader):
 
-        input = input.float()
-        target = target.float()
+            target = target.to(device)
 
-        # Forward pass
-        outputs = model(input)
+            input = input.float()
 
-        target = target.reshape(len(target), 1)
+            print("input during training:", np.array(input).shape)
 
-        floss = nn.MSELoss()
-        loss = floss(outputs, target)
+            target = target.float()
 
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            # Forward pass
+            outputs = model(input)
+
+            target = target.reshape(len(target), 1)
+
+            floss = nn.MSELoss()
+            loss = floss(outputs, target)
+
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
         print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, i+1, total_step, loss.item()))
+        torch.save(model.state_dict(), "data/value.pth")
 
