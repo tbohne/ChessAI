@@ -77,6 +77,11 @@ def value_func(res):
 #     move_val = np.array(move_val)
 #     return move_vec, move_val
 
+def serialize_board_state(board):
+    matrix = make_matrix(board.copy())
+    rows = translate(matrix, chess_dict)
+    return rows
+
 
 def get_training_data(num_of_examples):
     pgn = open("data/training_games.pgn")
@@ -94,9 +99,8 @@ def get_training_data(num_of_examples):
         for i, move in enumerate(game.mainline_moves()):
             board.push(move)
             value = game.headers["Result"]
-            matrix = make_matrix(board.copy())
-            rows = translate(matrix, chess_dict)
-            X.append(rows)
+            board_state = serialize_board_state(board)
+            X.append(board_state)
             Y.append(value_func(value))
 
         game = chess.pgn.read_game(pgn)
