@@ -64,7 +64,7 @@ class Net(nn.Module):
         x = self.last(x)
 
         # value oputput
-        return F.log_softmax(x)
+        return torch.tanh(x)
 
 chess_dataset = ChessValueDataset()
 model = Net()
@@ -81,16 +81,7 @@ total_step = len(chess_dataset)
 for epoch in range(num_epochs):
     for i, (input, target) in enumerate(train_loader):
 
-        # Move tensors to the configured device
-        # input = torch.cuda.FloatTensor(input)
-        # target = torch.cuda.FloatTensor(target)
-
-        #target = target.unsqueeze(-1)
-
-        #input = input.to(device)
         target = target.to(device)
-
-        #input = torch.tensor(input, dtype=torch.long, device=device)
 
         input = input.float()
         target = target.float()
@@ -98,7 +89,7 @@ for epoch in range(num_epochs):
         # Forward pass
         outputs = model(input)
 
-        #outputs = outputs.reshape(len(outputs))
+        target = target.reshape(len(target), 1)
 
         floss = nn.MSELoss()
         loss = floss(outputs, target)
