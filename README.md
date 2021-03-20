@@ -8,6 +8,7 @@ Approach to build a program that beats me in the game of chess.
 ### DEPENDENCIES
 - [python-chess](https://python-chess.readthedocs.io/en/latest/) - move generation, move validation and support for common formats
 - [flask](https://flask.palletsprojects.com/en/1.1.x/) - lightweight WSGI web application framework
+- [torch](https://pytorch.org/) - open source machine learning framework
 
 I need an approach that evaluates a given board state and comes up with a good move to perform.
 
