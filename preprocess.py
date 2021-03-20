@@ -48,10 +48,13 @@ chess_dict = {
 
 def value_func(res):
     if res == "1/2-1/2":
+        # draw
         return 0
     elif res == "1-0":
+        # white wins
         return 1
     elif res == "0-1":
+        # black wins
         return -1
     else:
         print("PROBLEM")

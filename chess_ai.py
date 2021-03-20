@@ -6,6 +6,7 @@ import sys
 from typing import Tuple
 import minimax
 import eval
+import chess_net
 
 import chess
 import chess.svg
@@ -117,7 +118,9 @@ class ChessAI:
             if human_move_performed and self.board.is_game_over():
                 hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
-                move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
+                #move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
+                net = chess_net.ChessNet()
+                move = chess_net.chess_net_move(net, self.board)
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():
