@@ -8,9 +8,8 @@ import numpy as np
 class ChessNet:
 
     def __init__(self):
-
         # load trained model
-        values = torch.load("data/value.pth", map_location=lambda storage, loc: storage)
+        values = torch.load("data/value.pth")
         self.model = Net()
         self.model.load_state_dict(values)
 
@@ -20,7 +19,6 @@ class ChessNet:
 
 
 def chess_net_move(net, board: chess.Board) -> chess.Move:
-
     # TODO: is 1-0 a win for white? then the AI should go for the min value, otherwise max?
 
     best_val = 1
@@ -36,5 +34,3 @@ def chess_net_move(net, board: chess.Board) -> chess.Move:
             best_val = val
             best_move = move
     return best_move
-
-
