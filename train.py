@@ -105,5 +105,5 @@ if __name__ == '__main__':
             optimizer.step()
 
         print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, i+1, total_step, loss.item()))
-        torch.save(model.state_dict(), "data/value.pth")
+    torch.save(model.state_dict(), "data/value.pth")
 

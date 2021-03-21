@@ -1,35 +1,7 @@
 import chess.pgn
 import numpy as np
 
-
-def make_matrix(board):
-    pgn = board.epd()
-    foo = []
-    pieces = pgn.split(" ", 1)[0]
-    rows = pieces.split("/")
-    for row in rows:
-        foo2 = []
-        for thing in row:
-            if thing.isdigit():
-                for i in range(0, int(thing)):
-                    foo2.append('.')
-            else:
-                foo2.append(thing)
-        foo.append(foo2)
-    return foo
-
-
-def translate(matrix, chess_dict):
-    rows = []
-    for row in matrix:
-        terms = []
-        for term in row:
-            terms.append(chess_dict[term])
-        rows.append(terms)
-    return rows
-
-
-chess_dict = {
+CHESS_DICT = {
     'p': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     'P': [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
     'n': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -46,50 +18,44 @@ chess_dict = {
 }
 
 
+def get_board_matrix(board):
+    rows = board.fen().split(" ", 1)[0].split("/")
+    matrix = []
+    for row in rows:
+        digits = [e for e in row if e.isdigit()]
+        for d in digits:
+            row = row.replace(d, ("." * int(d)))
+        matrix.append(list(row))
+    return matrix
+
+
+def get_neural_board_representation(matrix):
+    bit_board = [[CHESS_DICT[i] for i in row] for row in matrix]
+    return bit_board
+
+
 def value_func(res):
-    if res == "1/2-1/2":
-        # draw
+    if res == "1/2-1/2":  # draw
         return 0
-    elif res == "1-0":
-        # white wins
+    elif res == "1-0":  # white wins
         return 1
-    elif res == "0-1":
-        # black wins
+    elif res == "0-1":  # black wins
         return -1
     else:
-        print("PROBLEM")
+        print("problem - invalid game result:", res)
         exit(1)
 
 
-# def fen_to_vec(fen):
-#     positions, move_right, castling, en_passant, half_moves, move_num = fen.split(" ")
-#     print(move_right)
-
-# def pass_board_to_vec(board, game):
-#     move_vec = []
-#     move_val = []
-#     for i, move in enumerate(game.mainline_moves()):
-#         board.push(move)
-#         value = game.headers["Result"]
-#         matrix = make_matrix(board.copy())
-#         rows = translate(matrix, chess_dict)
-#         move_vec.append([rows])
-#         move_val.append(value_func(value))
-#
-#     move_vec = np.array(move_vec)#.reshape(1, 8, 8, 12)
-#     move_val = np.array(move_val)
-#     return move_vec, move_val
-
 def serialize_board_state(board):
-    matrix = make_matrix(board.copy())
-    rows = translate(matrix, chess_dict)
-    return rows
+    matrix = get_board_matrix(board.copy())
+    bit_board = get_neural_board_representation(matrix)
+    return bit_board
 
 
 def get_training_data(num_of_examples):
     pgn = open("data/training_games.pgn")
-    X = []
-    Y = []
+    board_states = []
+    outcomes = []
     game = chess.pgn.read_game(pgn)
     cnt = 0
 
@@ -97,27 +63,23 @@ def get_training_data(num_of_examples):
         if cnt == num_of_examples:
             break
         board = game.board()
-        #vec, val = pass_board_to_vec(board, game)
 
         for i, move in enumerate(game.mainline_moves()):
             board.push(move)
             value = game.headers["Result"]
             board_state = serialize_board_state(board)
-            X.append(board_state)
-            Y.append(value_func(value))
+            board_states.append(board_state)
+            outcomes.append(value_func(value))
 
+        print("parsed game ", cnt, "with", i, "board states")
         game = chess.pgn.read_game(pgn)
         cnt += 1
 
-    X = np.array(X)
-    Y = np.array(Y)
-    return X, Y
+    board_states = np.array(board_states)
+    outcomes = np.array(outcomes)
+    return board_states, outcomes
 
 
 if __name__ == '__main__':
-
     X, Y = get_training_data(500)
     np.savez("data/dataset.npz", X, Y)
-
-
-
