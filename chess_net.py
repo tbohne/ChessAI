@@ -11,7 +11,7 @@ class ChessNet:
         """
         Loads the trained model.
         """
-        values = torch.load("data/value.pth")
+        values = torch.load("data/trained_model.pth")
         self.model = Net()
         self.model.load_state_dict(values)
 
