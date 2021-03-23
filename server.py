@@ -9,7 +9,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def root(ai_move="", human_move="", hint_text="", score=0) -> str:
-    """Returns the html page that displays the current board state.
+    """
+    Returns the html page that displays the current board state.
 
     Args:
         ai_move:    last move of the AI
@@ -19,11 +20,9 @@ def root(ai_move="", human_move="", hint_text="", score=0) -> str:
 
     Returns:
         html page with current board state
-
     """
 
     img = "data:image/svg+xml;base64," + ai.get_board_svg()
-
     score_class = ""
     if score != 0:
         score_class = "neg_score" if score < 0 else "pos_score"
@@ -34,11 +33,11 @@ def root(ai_move="", human_move="", hint_text="", score=0) -> str:
 
 @app.route("/move")
 def move() -> str:
-    """Performs a human and an answering AI move and checks for game over situations.
+    """
+    Performs a human and an answering AI move and checks for game over situations.
 
     Returns:
         html page for updated board after performed moves
-
     """
     player_move = request.args.get('move', default="")
     ai_move, human_move, hint_text, score = ai.move(player_move)

@@ -2,14 +2,14 @@ import chess
 
 
 def get_piece_rating(piece: str) -> int:
-    """Returns a rating for the specified piece.
+    """
+    Returns a rating for the specified piece.
 
     Args:
         piece: chess piece
 
     Returns:
         rating for the piece
-
     """
     # pawn
     if piece in ('P', 'p'):
@@ -30,7 +30,8 @@ def get_piece_rating(piece: str) -> int:
 
 
 def evaluation(board: chess.Board) -> int:
-    """Evaluates the current board state.
+    """
+    Evaluates the current board state.
 
         Large values would favor white while small values would favor black.
         --> white tries to maximize the evaluation
@@ -41,7 +42,6 @@ def evaluation(board: chess.Board) -> int:
 
     Returns:
         evaluation value
-
     """
     val = 0
     for i in range(64):

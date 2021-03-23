@@ -4,7 +4,8 @@ import chess
 
 
 def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: float, beta: float) -> float:
-    """Performs a step in the minimax algorithm.
+    """
+    Performs a step in the minimax algorithm.
 
     Args:
         depth:      current depth in minimax tree
@@ -15,7 +16,6 @@ def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: float,
 
     Returns:
         minimax value
-
     """
     if depth == 0:
         return eval.evaluation(board)
@@ -43,7 +43,8 @@ def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: float,
 
 
 def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
-    """First minimax step that calls the recursive procedure.
+    """
+    First minimax step that calls the recursive procedure.
     Since it's black's move here and black tries to minimize the evaluation function,
     the first minimax step should be a minimizing one.
 
@@ -54,7 +55,6 @@ def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
 
     Returns:
         best move to be performed
-
     """
     best_val = float('inf')
     best_move = None
