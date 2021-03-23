@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import chess.pgn
 import numpy as np
 
@@ -136,4 +138,4 @@ def get_training_data(num_of_examples, training_data_path):
 
 if __name__ == '__main__':
     X, Y = get_training_data(500, "data/training_games.pgn")
-    np.savez("data/dataset.npz", X, Y)
+    np.savez("data/training_data.npz", X, Y)

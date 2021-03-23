@@ -1,22 +1,12 @@
+#!/usr/bin/env python
+
 from torch.utils.data import Dataset
+from training_data import TrainingData
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-class ChessValueDataset(Dataset):
-
-    def __init__(self):
-        dat = np.load("data/dataset.npz", allow_pickle=True)
-        self.X = dat['arr_0']
-        self.Y = dat['arr_1']
-
-    def __len__(self):
-        return self.X.shape[0]
-
-    def __getitem__(self, idx):
-        return (self.X[idx], self.Y[idx])
 
 class Net(nn.Module):
 
@@ -68,7 +58,7 @@ class Net(nn.Module):
 
 if __name__ == '__main__':
 
-    chess_dataset = ChessValueDataset()
+    chess_dataset = TrainingData()
     model = Net()
     num_epochs = 10
     device = 'cpu' #torch.device('cuda' if torch.cuda.is_available() else 'cpu')
