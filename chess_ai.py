@@ -23,28 +23,29 @@ class ChessAI:
         self.board = chess.Board()
 
     def get_board_svg(self):
-        """Provides an SVG representation of the current board state.
+        """
+        Provides an SVG representation of the current board state.
 
         Returns:
             SVG representation of current board state
-
         """
         svg = chess.svg.board(board=self.board)
         return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
 
     def get_random_move(self):
-        """Returns a random move from the set of legal moves.
+        """
+        Returns a random move from the set of legal moves.
 
         Returns:
             random legal move
-
         """
         legal_moves = list(self.board.legal_moves)
         move = random.choice(legal_moves)
         return str(move)
 
     def pawn_queen_promotion(self, move: chess.Move) -> str:
-        """Checks whether the move to be performed could lead to a pawn promotion.
+        """
+        Checks whether the move to be performed could lead to a pawn promotion.
         If so, the pawn always gets promoted to a queen.
 
         Args:
@@ -52,7 +53,6 @@ class ChessAI:
 
         Returns:
             move to be performed
-
         """
         piece = self.board.piece_at(move.from_square)
         is_pawn = piece is not None and piece.piece_type == chess.PAWN
@@ -64,14 +64,14 @@ class ChessAI:
         return str(move)
 
     def determine_game_over_situation(self, human_move: bool) -> str:
-        """Determines the kind of game over situation (checkmate, stalemate, draw).
+        """
+        Determines the kind of game over situation (checkmate, stalemate, draw).
 
         Args:
             human_move: whether the last move is by human (AI otherwise)
 
         Returns:
             hint text describing the game over situation
-
         """
         if self.board.is_checkmate():
             if human_move:
@@ -84,7 +84,8 @@ class ChessAI:
             return "DRAW - INSUFFICIENT MATERIAL"
 
     def move(self, move: str) -> Tuple[str, str, str, int]:
-        """Performs one move of the human player, an answering move of the AI and
+        """
+        Performs one move of the human player, an answering move of the AI and
         checks for game over situations.
 
         Args:
@@ -95,7 +96,6 @@ class ChessAI:
             human_move: performed move of the human player
             hint_text:  optional hint msg (e.g. invalid move)
             score:      current evaluation of the board from white's perspective
-
         """
         ai_move = human_move = hint_text = ""
 
@@ -118,9 +118,9 @@ class ChessAI:
             if human_move_performed and self.board.is_game_over():
                 hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
-                #move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
+                # move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
                 net = chess_net.ChessNet()
-                move = chess_net.chess_net_move(net, self.board)
+                move = net(self.board)
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():

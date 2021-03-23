@@ -18,7 +18,16 @@ CHESS_DICT = {
 }
 
 
-def get_board_matrix(board):
+def get_board_matrix(board: chess.Board) -> list:
+    """Transforms the specified board into a matrix form (list of rows).
+
+    Args:
+        board: chess board state
+
+    Returns:
+        matrix: board in matrix form
+
+    """
     rows = board.fen().split(" ", 1)[0].split("/")
     matrix = []
     for row in rows:
@@ -30,6 +39,14 @@ def get_board_matrix(board):
 
 
 def get_neural_board_representation(matrix):
+    """
+
+    Args:
+        matrix:
+
+    Returns:
+
+    """
     bit_board = [[CHESS_DICT[i] for i in row] for row in matrix]
     return bit_board
 
@@ -64,16 +81,20 @@ def get_training_data(num_of_examples):
             break
         board = game.board()
 
-        for i, move in enumerate(game.mainline_moves()):
+        for move in game.mainline_moves():
             board.push(move)
-            value = game.headers["Result"]
             board_state = serialize_board_state(board)
             board_states.append(board_state)
-            outcomes.append(value_func(value))
+            outcomes.append(value_func(game.headers["Result"]))
 
-        print("parsed game ", cnt, "with", i, "board states")
+        print("parsed game ", cnt, "with", len(list(game.mainline_moves())), "board states")
         game = chess.pgn.read_game(pgn)
         cnt += 1
+
+    print("#########################################")
+    print("total number of training games:", cnt)
+    print("total number of board states:", len(board_states))
+    print("#########################################")
 
     board_states = np.array(board_states)
     outcomes = np.array(outcomes)
