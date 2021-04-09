@@ -75,7 +75,6 @@ def value_func(res: str) -> int:
         return -1
     else:
         print("problem - invalid game result:", res)
-        exit(1)
 
 
 def serialize_board_state(board: chess.Board) -> list:
@@ -119,8 +118,10 @@ def get_training_data(num_of_examples, training_data_path):
         for move in game.mainline_moves():
             board.push(move)
             board_state = serialize_board_state(board)
-            board_states.append(board_state)
-            outcomes.append(value_func(game.headers["Result"]))
+            val = value_func(game.headers["Result"])
+            if val in [0, 1, -1]:
+                outcomes.append(val)
+                board_states.append(board_state)
 
         print("parsed game ", cnt, "with", len(list(game.mainline_moves())), "board states")
         game = chess.pgn.read_game(pgn)
@@ -137,5 +138,5 @@ def get_training_data(num_of_examples, training_data_path):
 
 
 if __name__ == '__main__':
-    X, Y = get_training_data(500, "data/training_games.pgn")
+    X, Y = get_training_data(20000, "data/lichess.pgn")
     np.savez("data/training_data.npz", X, Y)
