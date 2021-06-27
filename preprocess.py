@@ -94,23 +94,26 @@ def serialize_board_state(board: chess.Board) -> list:
 
 def get_training_data(num_of_examples, training_data_path):
     """
-    Retrieves the training examples from the specified training set.
+    Retrieves the training examples from the specified training set and writes them into a set of files.
 
     Args:
         num_of_examples:    number of examples to be used for training
         training_data_path: path to the training data file (.pgn file - portable game notation)
-
-    Returns:
-        board_states: serialized board states
-        outcomes:     target values (chess game outcomes)
     """
     pgn = open(training_data_path)
     board_states = []
     outcomes = []
     game = chess.pgn.read_game(pgn)
     cnt = 0
-
+    file = 1
     while game:
+        # enough for one file
+        if cnt > 0 and cnt % 10000 == 0:
+            np.savez("data/training_data" + str(file) + ".npz", np.array(board_states), np.array(outcomes))
+            file += 1
+            board_states = []
+            outcomes = []
+
         if cnt == num_of_examples:
             break
         board = game.board()
@@ -132,11 +135,6 @@ def get_training_data(num_of_examples, training_data_path):
     print("total number of board states:", len(board_states))
     print("#########################################")
 
-    board_states = np.array(board_states)
-    outcomes = np.array(outcomes)
-    return board_states, outcomes
-
 
 if __name__ == '__main__':
-    X, Y = get_training_data(20000, "data/lichess.pgn")
-    np.savez("data/training_data.npz", X, Y)
+    get_training_data(50000, "data/NEW.pgn")
