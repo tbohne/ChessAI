@@ -1,90 +1,104 @@
 #!/usr/bin/env python
 
-from torch.utils.data import Dataset
 from training_data import TrainingData
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import numpy as np
+
+INPUT_SIZE = 8
+HIDDEN_SIZE = 128
+NUM_CLASSES = 1
+BATCH_SIZE = 256
+LEARNING_RATE = 0.0001
+NUM_EPOCHS = 64
 
 
 class Net(nn.Module):
 
     def __init__(self):
-        super(Net, self).__init__()
-        self.a1 = nn.Conv2d(8, 16, kernel_size=3)
-        self.a2 = nn.Conv2d(16, 16, kernel_size=3)
-        self.a3 = nn.Conv2d(16, 32, kernel_size=3)
+        super().__init__()
 
-        self.b1 = nn.Conv2d(32, 32, kernel_size=3, padding=2)
-        self.b2 = nn.Conv2d(32, 32, kernel_size=3, padding=2)
-        self.b3 = nn.Conv2d(32, 64, kernel_size=3, padding=2)
+        # input shape: [batch_size, 8, 8, 12]
+        # 8x8 board and 12 features (one-hot)
 
-        self.c1 = nn.Conv2d(64, 64, kernel_size=2)
-        self.c2 = nn.Conv2d(64, 64, kernel_size=2)
-        self.c3 = nn.Conv2d(64, 128, kernel_size=2, padding=1)
+        self.conv1 = nn.Conv2d(INPUT_SIZE, INPUT_SIZE * 2, kernel_size=3, padding=2)
+        self.conv2 = nn.Conv2d(INPUT_SIZE * 2, INPUT_SIZE * 4, kernel_size=3, padding=2)
+        self.conv3 = nn.Conv2d(INPUT_SIZE * 4, INPUT_SIZE * 8, kernel_size=3, padding=2)
+        self.conv4 = nn.Conv2d(INPUT_SIZE * 8, HIDDEN_SIZE, kernel_size=3, padding=2)
+        self.conv5 = nn.Conv2d(HIDDEN_SIZE, HIDDEN_SIZE, kernel_size=3, padding=2)
+        self.conv6 = nn.Conv2d(HIDDEN_SIZE, HIDDEN_SIZE, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
 
-        self.d1 = nn.Conv2d(128, 128, kernel_size=2)
-        self.d2 = nn.Conv2d(128, 128, kernel_size=2)
-        self.d3 = nn.Conv2d(128, 128, kernel_size=2)
+        self.fc1 = nn.Linear(128 * 1 * 1, HIDDEN_SIZE)
+        self.fc2 = nn.Linear(HIDDEN_SIZE, 64)
+        self.fc3 = nn.Linear(64, NUM_CLASSES)
 
-        self.last = nn.Linear(128, 1)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = F.relu(self.a1(x))
-        x = F.relu(self.a2(x))
-        x = F.relu(self.a3(x))
-        x = F.max_pool2d(x, 2)
+        # define feed-forward neural net --> how the data flows through the net
 
-        # 4x4
-        x = F.relu(self.b1(x))
-        x = F.relu(self.b2(x))
-        x = F.relu(self.b3(x))
-        x = F.max_pool2d(x, 2)
+        out = self.pool(self.relu(self.conv1(x)))
+        out = self.pool(self.relu(self.conv2(out)))
+        out = self.pool(self.relu(self.conv3(out)))
+        out = self.pool(self.relu(self.conv4(out)))
+        out = self.pool(self.relu(self.conv5(out)))
+        out = self.pool(self.relu(self.conv6(out)))
 
-        # 2x2
-        x = F.relu(self.c1(x))
-        x = F.relu(self.c2(x))
-        x = F.relu(self.c3(x))
-        x = F.max_pool2d(x, 2)
-
-        # 1x128
-        x = x.view(-1, 128)
-        x = self.last(x)
-
-        # value output
-        return torch.tanh(x)
+        out = out.view(-1, 128 * 1 * 1)
+        out = self.relu(self.fc1(out))
+        out = self.relu(self.fc2(out))
+        out = self.fc3(out)
+        return torch.tanh(out)
 
 
-def train_model(net, dataset):
-    num_epochs = 10
-    # TODO: test gpu training
-    device = 'cpu'
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
-    net.to(device)
-    train_loader = torch.utils.data.DataLoader(dataset, batch_size=256, shuffle=True)
+def train_model(net):
+    # gpu training
+    device = 'cuda'
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
-    for epoch in range(num_epochs):
-        for i, (input, target) in enumerate(train_loader):
-            target = target.to(device).float()
+    for dataset in range(1, 5):
+        data = None
+        if dataset == 1:
+            print("data set 1......")
+            data = TrainingData(np.load("data/training_data1.npz"))
+        elif dataset == 2:
+            print("data set 2......")
+            data = TrainingData(np.load("data/training_data2.npz"))
+        elif dataset == 3:
+            print("data set 3......")
+            data = TrainingData(np.load("data/training_data3.npz"))
+        else:
+            print("data set 4......")
+            data = TrainingData(np.load("data/training_data4.npz"))
 
-            # Forward pass
-            outputs = net(input.float())
+        # batch size of 1 means to consider only one (board state - result) pair at a time
+        train_loader = torch.utils.data.DataLoader(data, batch_size=BATCH_SIZE, shuffle=True)
 
-            target = target.reshape(len(target), 1)
-            floss = nn.MSELoss()
-            loss = floss(outputs, target)
+        for epoch in range(NUM_EPOCHS):
+            for i, (input, target) in enumerate(train_loader):
 
-            # backward and optimize
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+                input = input.to(device).cuda().float()
+                target = target.reshape(len(target), 1).to(device).cuda().float()
 
-            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
-                epoch + 1, num_epochs, i + 1, len(train_loader), loss.item()))
+                # forward
+                outputs = model(input)
+                loss = criterion(outputs, target)
+
+                # backward
+                optimizer.zero_grad()
+                # backpropagation
+                loss.backward()
+                # adjust weights
+                optimizer.step()
+                if i % 10 == 0:
+                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch + 1, NUM_EPOCHS, i + 1,
+                                                                             len(train_loader), loss.item()))
 
 
 if __name__ == '__main__':
-    data = TrainingData()
     model = Net()
-    train_model(model, data)
+    model.cuda()
+    train_model(model)
     torch.save(model.state_dict(), "data/trained_model.pth")
