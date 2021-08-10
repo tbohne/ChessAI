@@ -116,9 +116,11 @@ class ChessAI:
             if human_move_performed and self.board.is_game_over():
                 hint_text = self.determine_game_over_situation(True)
             elif human_move_performed:
-                # move = minimax.minimax(MINIMAX_DEPTH, False, self.board)
+
                 net = chess_net.ChessNet()
-                move = net(self.board)
+                moves = net(self.board)
+                move = minimax.minimax(MINIMAX_DEPTH, False, self.board, moves)
+
                 ai_move = str(move)
                 self.board.push_uci(str(move))
                 if self.board.is_game_over():

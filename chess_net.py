@@ -25,16 +25,22 @@ class ChessNet:
         Returns:
             move to be performed based on the neural nets evaluation
         """
-        best_val = 1
-        best_move = None
+        move_dict = {}
+
         for move in board.legal_moves:
             board.push_uci(str(move))
             output = self.model(torch.tensor(np.array(preprocess.serialize_board_state(board))[None]).float())
             val = output.data[0].item()
             print("net output:", val)
             board.pop()
-            if val < best_val:
-                best_val = val
-                best_move = move
-        print("perf. move:", best_move, " with val:", best_val)
-        return best_move
+            move_dict[move] = val
+        # sort moves based on value (best first)
+        move_dict = {k: v for k, v in sorted(move_dict.items(), key=lambda item: item[1])}
+        print(move_dict)
+
+        moves = []
+        for key in move_dict.keys():
+            moves.append(key)
+            if len(moves) == 10:
+                break
+        return moves

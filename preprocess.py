@@ -137,4 +137,4 @@ def get_training_data(num_of_examples, training_data_path):
 
 
 if __name__ == '__main__':
-    get_training_data(50000, "data/NEW.pgn")
+    get_training_data(80000, "data/NEW.pgn")

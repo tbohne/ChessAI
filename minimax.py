@@ -42,7 +42,7 @@ def minimax_step(depth: int, maximizing: bool, board: chess.Board, alpha: float,
     return min_val
 
 
-def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
+def minimax(depth: int, maximizing: bool, board: chess.Board, neural_net_moves: list) -> chess.Move:
     """
     First minimax step that calls the recursive procedure.
     Since it's black's move here and black tries to minimize the evaluation function,
@@ -52,6 +52,7 @@ def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
         depth:      depth of minimax tree
         maximizing: whether the current step is a maximizing step
         board:      board state to perform minimax for
+        neural_net_moves: the best n moves for the current board pos (determined by NN)
 
     Returns:
         best move to be performed
@@ -59,7 +60,7 @@ def minimax(depth: int, maximizing: bool, board: chess.Board) -> chess.Move:
     best_val = float('inf')
     best_move = None
 
-    for move in board.legal_moves:
+    for move in neural_net_moves:
         board.push_uci(str(move))
         val = min(best_val, minimax_step(depth - 1, not maximizing, board, float('-inf'), float('inf')))
         board.pop()
