@@ -10,7 +10,7 @@ HIDDEN_SIZE = 128
 NUM_CLASSES = 1
 BATCH_SIZE = 256
 LEARNING_RATE = 0.0001
-NUM_EPOCHS = 64
+NUM_EPOCHS = 256
 
 
 class Net(nn.Module):
@@ -58,7 +58,7 @@ def train_model(net):
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
-    for dataset in range(1, 5):
+    for dataset in range(1, 9):
         data = None
         if dataset == 1:
             print("data set 1......")
@@ -69,9 +69,23 @@ def train_model(net):
         elif dataset == 3:
             print("data set 3......")
             data = TrainingData(np.load("data/training_data3.npz"))
-        else:
+        elif dataset == 4:
             print("data set 4......")
             data = TrainingData(np.load("data/training_data4.npz"))
+        elif dataset == 5:
+            print("data set 5......")
+            data = TrainingData(np.load("data/training_data5.npz"))
+        elif dataset == 6:
+            print("data set 6......")
+            data = TrainingData(np.load("data/training_data6.npz"))
+        elif dataset == 7:
+            print("data set 7......")
+            data = TrainingData(np.load("data/training_data7.npz"))
+        elif dataset == 8:
+            print("data set 8......")
+            data = TrainingData(np.load("data/training_data8.npz"))
+        else:
+            print("no more ")
 
         # batch size of 1 means to consider only one (board state - result) pair at a time
         train_loader = torch.utils.data.DataLoader(data, batch_size=BATCH_SIZE, shuffle=True)
