@@ -1,7 +1,9 @@
 ChessAI
 =====================================================
 
-Approach to build a program that beats me in the game of chess.
+Approach to write a program that beats me in the game of chess.
+
+![example board](img/example.png)
 
 **********************************
 
