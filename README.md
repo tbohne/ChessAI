@@ -39,11 +39,12 @@ Why is it hard?
     - decrease the number of nodes that are evaluated by the minimax algorithm and therefore the computation time
     - allows to search faster and works reasonably up to a depth of *4*
 
-### 2nd approach: Neural Network
-- **mapping**: board state -> move to be performed
-- need a lot of chess games to train with
+### 2nd approach: [ANN](https://en.wikipedia.org/wiki/Artificial_neural_network)
+- **mapping to be learned**: board state -> optimal move
+- needs a lot of chess games to train with
+- used PyTorch to implement the neural net
 
 ### TRAINING DATA
 
 The net was trained on 110000 standard rated games played on [lichess.org ](https://database.lichess.org/) in [Portable Game Notation (PGN)](https://de.wikipedia.org/wiki/Portable_Game_Notation) format.  
-Therefore, based on the above assumptions, the model was trained based on approximately 8.8M board positions.
+Therefore, based on the above assumptions, the model was trained on approximately 8.8M board positions.
