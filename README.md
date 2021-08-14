@@ -3,7 +3,7 @@ ChessAI
 
 Approach to write a program that beats me in the game of chess.
 
-![example board](img/example.png)
+![example board](example.png)
 
 **********************************
 
