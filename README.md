@@ -12,6 +12,14 @@ Approach to write a program that beats me in the game of chess.
 - [flask](https://flask.palletsprojects.com/en/1.1.x/) - lightweight WSGI web application framework
 - [torch](https://pytorch.org/) - open source machine learning framework
 
+### USAGE
+
+```
+./server.py # runs webserver on localhost:5000
+```
+
+### PROBLEM
+
 I need an approach that evaluates a given board state and comes up with a good move to perform.
 
 Why is it hard?
@@ -20,7 +28,7 @@ Why is it hard?
 - ~30 moves per board state
 - typical chess game ~80 moves
 
-TODO: describe PGN notation and training data in general (how much etc.)
+### APPROACHES
 
 ### 1st approach: [Minimax](https://en.wikipedia.org/wiki/Minimax)
 - minimizing the possible loss for a worst case (maximum loss) scenario
@@ -34,3 +42,8 @@ TODO: describe PGN notation and training data in general (how much etc.)
 ### 2nd approach: Neural Network
 - **mapping**: board state -> move to be performed
 - need a lot of chess games to train with
+
+### TRAINING DATA
+
+The net was trained on 110000 standard rated games played on [lichess.org ](https://database.lichess.org/) in [Portable Game Notation (PGN)](https://de.wikipedia.org/wiki/Portable_Game_Notation) format.  
+Therefore, based on the above assumptions, the model was trained based on approximately 8.8M board positions.
