@@ -1,8 +1,6 @@
 ChessAI
 =====================================================
 
-Approach to write a program that beats me in the game of chess.
-
 ![example board](example.png)
 
 **********************************
@@ -20,7 +18,7 @@ Approach to write a program that beats me in the game of chess.
 
 ## PROBLEM
 
-I need an approach that evaluates a given board state and comes up with a good move to perform.
+Evaluate a given board state and come up with a good move to perform.
 
 Why is it hard?
 - ~10^40 legal board states
@@ -30,19 +28,19 @@ Why is it hard?
 
 ## APPROACHES
 
-## 1st approach: [Minimax](https://en.wikipedia.org/wiki/Minimax)
-- minimizing the possible loss for a worst case (maximum loss) scenario
-- reasonably works up to a search depth of *3*
-- already surprinsingly good opponent, but beatable
-- **improvement**
-    - [alpha–beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
-    - decreases the number of nodes that are evaluated by minimax and therefore the computation time
-    - allows to search faster and works reasonably up to a depth of *4*
+-  [Minimax](https://en.wikipedia.org/wiki/Minimax)
+    - minimizing the possible loss for a worst case (maximum loss) scenario
+    - reasonably works up to a search depth of *3*
+    - already surprinsingly good opponent, but beatable
+    - **improvement**
+        - [alpha–beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
+        - decreases the number of nodes that are evaluated by minimax and therefore the computation time
+        - allows to search faster and works reasonably up to a depth of *4*
 
-## 2nd approach: [ANN](https://en.wikipedia.org/wiki/Artificial_neural_network)
-- **mapping to be learned**: board state -> optimal move
-- needs a lot of chess games to train with
-- used PyTorch to implement the neural net
+- [ANN](https://en.wikipedia.org/wiki/Artificial_neural_network)
+    - **mapping to be learned**: board state -> optimal move
+    - needs a lot of chess games to train with
+    - used PyTorch to implement the neural net
 
 ## TRAINING DATA
 
